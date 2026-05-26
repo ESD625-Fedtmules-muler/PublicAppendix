@@ -8,3 +8,6 @@
 [submodule "Hardware/Transciever_hardware"]
 	path = Hardware/Transciever_hardware
 	url = git@github.com:ESD625-Fedtmules-muler/ESP_LR1121_Modem.git
+[submodule "Antenna_measurements/Antenna-Plotting"]
+	path = Antenna_measurements/Antenna-Plotting
+	url = https://github.com/ESD625-Fedtmules-muler/Antenna-Plotting.git
