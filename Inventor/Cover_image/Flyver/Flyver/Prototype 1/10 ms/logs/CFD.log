@@ -1,0 +1,521 @@
+[10:11:46] Cannot find a flags file
+[10:11:47] Loading qm files
+[10:11:47] System language is Danish
+[10:11:48] Completed pre-event loop tasks in 0.936 sec
+[10:11:48] Start processing tasks
+[10:11:48] Starting task: Clt::InitializationTasks::initializeMainWindowUI
+[10:11:48] Creating main view...
+[10:11:48] Creating actions...
+[10:11:48] Creating quick widgets...
+[10:11:48] Creating panel...
+[10:11:48] Creating status bar...
+[10:11:48] Creating tool bar...
+[10:11:48] Initializing menu...
+[10:11:48] Task finished in 0.36 sec
+[10:11:48] Starting task: Clt::InitializationTasks::initializeApplicationFrame
+[10:11:48] Task finished in 0.58 sec
+[10:11:49] Starting task: Clt::InitializationTasks::initializeWebServices
+[10:11:50] Task finished in 0.92 sec
+[10:11:50] Starting task: Clt::InitializationTasks::initializeAirLook
+[10:11:51] Task finished in 1.10 sec
+[10:11:51] Starting task: Clt::InitializationTasks::initializeServerGroup
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Clt::InitializationTasks::initializeHelpManager
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Clt::InitializationTasks::setMainWindowUIState
+[10:11:51] Task finished in 0.17 sec
+[10:11:51] Starting task: Clt::InitializationTasks::assignShortcuts
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Clt::InitializationTasks::initializeScriptJobEvents
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Clt::InitializationTasks::initializeGAT
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Clt::InitializationTasks::createGeoMeshMessageHandler
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Clt::InitializationTasks::initializeLicensing
+[10:11:51] Creating license manager...
+[10:11:51] Initializing license manager...
+[10:11:51] Listen for lost license signal...
+[10:11:51] Task finished in 0.00 sec
+[10:11:51] Starting task: Checkout CFD UI
+[10:11:51] Authorizing CFD UI...
+[10:11:53] Success
+[10:11:53] Task finished in 2.41 sec
+[10:11:53] Starting task: Clt::InitializationTasks::checkForLicensingError
+[10:11:53] Task finished in 0.04 sec
+[10:11:53] Starting task: Clt::InitializationTasks::showMainWindow
+[10:11:53] Loading layout...
+[10:11:54] Task finished in 0.38 sec
+[10:11:54] Starting task: Clt::InitializationTasks::hideSplashScreen
+[10:11:54] Task finished in 0.00 sec
+[10:11:54] Starting task: Clt::InitializationTasks::initializeCustomResults
+[10:11:54] Task finished in 0.00 sec
+[10:11:54] Starting task: Clt::InitializationTasks::handleExternalLaunchFromCAD
+[10:11:54] Task finished in 0.00 sec
+[10:11:54] Starting task: Clt::InitializationTasks::initializePythonHooks
+[10:11:54] Loading CFD resource file...
+[10:11:54] Task finished in 0.26 sec
+[10:11:54] Starting task: Clt::InitializationTasks::runScript
+[10:11:54] Task finished in 0.00 sec
+[10:11:54] Finished processing tasks in 6.81 sec
+[10:12:52] External fragmentation is 0
+[10:12:52] Internal fragmentation is 0.967285
+[10:12:52] External fragmentation is 0.000873108
+[10:12:52] Internal fragmentation is 0.00415836
+[10:12:59] External fragmentation is 0
+[10:12:59] Internal fragmentation is 0.00367819
+[10:13:26] Flyver/Prototype 1/10 ms job finished at ma maj 3 10:13:26 2021 on KOPERNIKUS
+[10:13:36] Analysis::writeGBIFile = 0 sec
+[10:13:36] Login expiration: ma maj 17 10:06:34 2021
+[10:13:36] Token expiration: on maj 5 10:06:34 2021
+[10:13:36] Analysis::exportJobFiles = 0.001 sec
+[10:13:36] Flyver/Prototype 1/10 ms job started at ma maj 3 10:13:36 2021 on KOPERNIKUS
+[10:13:36] Flyver/Prototype 1/10 ms mesher started at ma maj 3 10:13:36 2021 on KOPERNIKUS
+[10:14:24] Flyver/Prototype 1/10 ms mesher finished at ma maj 3 10:14:24 2021 on KOPERNIKUS with code = 0
+[10:14:24] Analysis::importMesherFiles = 0.286 sec
+[10:14:26] CADModel::loadGeometryDatabase = 1.392 sec
+[10:14:26] Mesher finished copying files
+[10:14:26] Flyver/Prototype 1/10 ms solver started at ma maj 3 10:14:24 2021 on KOPERNIKUS
+[10:14:40] getJobUpdate start
+[10:14:41] VizDataInterface::getBoundaryFEData = 0.211 sec
+[10:14:41] VizDataInterface::setupWallOutlineData = 0.028 sec
+[10:14:42] VizDataInterface::getBoundaryFEData = 0.232 sec
+[10:14:42] VizDataInterface::setupWallOutlineData = 0.018 sec
+[10:14:42] getJobUpdate finished
+[10:14:44] Could not find message key: (solver, AnalyzeC, Turbulent Incompressible Flow is ON)
+[10:14:44] Could not find message key: (solver, AnalyzeC, Turbulence model: Standard k-epsilon)
+[10:14:44] Could not find message key: (solver, AnalyzeC, Intelligent Wall Formulation: OFF)
+[10:14:49] getJobUpdate start
+[10:14:49] getJobUpdate finished
+[10:14:53] getJobUpdate start
+[10:14:53] getJobUpdate finished
+[10:14:56] getJobUpdate start
+[10:14:57] getJobUpdate finished
+[10:15:00] getJobUpdate start
+[10:15:00] getJobUpdate finished
+[10:15:05] getJobUpdate start
+[10:15:05] getJobUpdate finished
+[10:15:10] getJobUpdate start
+[10:15:10] getJobUpdate finished
+[10:15:15] getJobUpdate start
+[10:15:15] getJobUpdate finished
+[10:15:19] getJobUpdate start
+[10:15:19] getJobUpdate finished
+[10:15:23] getJobUpdate start
+[10:15:23] getJobUpdate finished
+[10:15:27] getJobUpdate start
+[10:15:27] getJobUpdate finished
+[10:15:33] getJobUpdate start
+[10:15:33] getJobUpdate finished
+[10:15:38] getJobUpdate start
+[10:15:39] getJobUpdate finished
+[10:15:44] getJobUpdate start
+[10:15:45] getJobUpdate finished
+[10:15:50] getJobUpdate start
+[10:15:50] getJobUpdate finished
+[10:15:55] getJobUpdate start
+[10:15:55] getJobUpdate finished
+[10:16:00] getJobUpdate start
+[10:16:00] getJobUpdate finished
+[10:16:05] getJobUpdate start
+[10:16:06] getJobUpdate finished
+[10:16:11] getJobUpdate start
+[10:16:11] getJobUpdate finished
+[10:16:16] getJobUpdate start
+[10:16:16] getJobUpdate finished
+[10:16:22] getJobUpdate start
+[10:16:22] getJobUpdate finished
+[10:16:27] getJobUpdate start
+[10:16:27] getJobUpdate finished
+[10:16:32] getJobUpdate start
+[10:16:32] getJobUpdate finished
+[10:16:38] getJobUpdate start
+[10:16:38] getJobUpdate finished
+[10:16:43] getJobUpdate start
+[10:16:43] getJobUpdate finished
+[10:16:48] getJobUpdate start
+[10:16:48] getJobUpdate finished
+[10:16:54] getJobUpdate start
+[10:16:54] getJobUpdate finished
+[10:16:59] getJobUpdate start
+[10:16:59] getJobUpdate finished
+[10:17:04] getJobUpdate start
+[10:17:05] getJobUpdate finished
+[10:17:10] getJobUpdate start
+[10:17:10] getJobUpdate finished
+[10:17:15] getJobUpdate start
+[10:17:15] getJobUpdate finished
+[10:17:20] getJobUpdate start
+[10:17:20] getJobUpdate finished
+[10:17:26] getJobUpdate start
+[10:17:26] getJobUpdate finished
+[10:17:31] getJobUpdate start
+[10:17:31] getJobUpdate finished
+[10:17:36] getJobUpdate start
+[10:17:36] getJobUpdate finished
+[10:17:42] getJobUpdate start
+[10:17:42] getJobUpdate finished
+[10:17:47] getJobUpdate start
+[10:17:47] getJobUpdate finished
+[10:17:52] getJobUpdate start
+[10:17:52] getJobUpdate finished
+[10:17:57] getJobUpdate start
+[10:17:57] getJobUpdate finished
+[10:18:02] getJobUpdate start
+[10:18:03] getJobUpdate finished
+[10:18:07] getJobUpdate start
+[10:18:08] getJobUpdate finished
+[10:18:13] getJobUpdate start
+[10:18:13] getJobUpdate finished
+[10:18:18] getJobUpdate start
+[10:18:18] getJobUpdate finished
+[10:18:24] getJobUpdate start
+[10:18:24] getJobUpdate finished
+[10:18:29] getJobUpdate start
+[10:18:29] getJobUpdate finished
+[10:18:34] getJobUpdate start
+[10:18:34] getJobUpdate finished
+[10:18:40] getJobUpdate start
+[10:18:40] getJobUpdate finished
+[10:18:45] getJobUpdate start
+[10:18:45] getJobUpdate finished
+[10:18:51] getJobUpdate start
+[10:18:51] getJobUpdate finished
+[10:18:56] getJobUpdate start
+[10:18:56] getJobUpdate finished
+[10:19:01] getJobUpdate start
+[10:19:01] getJobUpdate finished
+[10:19:07] getJobUpdate start
+[10:19:07] getJobUpdate finished
+[10:19:12] getJobUpdate start
+[10:19:12] getJobUpdate finished
+[10:19:17] getJobUpdate start
+[10:19:17] getJobUpdate finished
+[10:19:22] getJobUpdate start
+[10:19:22] getJobUpdate finished
+[10:19:28] getJobUpdate start
+[10:19:28] getJobUpdate finished
+[10:19:33] getJobUpdate start
+[10:19:33] getJobUpdate finished
+[10:19:38] getJobUpdate start
+[10:19:38] getJobUpdate finished
+[10:19:44] getJobUpdate start
+[10:19:44] getJobUpdate finished
+[10:19:49] getJobUpdate start
+[10:19:49] getJobUpdate finished
+[10:19:54] getJobUpdate start
+[10:19:54] getJobUpdate finished
+[10:20:00] getJobUpdate start
+[10:20:00] getJobUpdate finished
+[10:20:05] getJobUpdate start
+[10:20:05] getJobUpdate finished
+[10:20:10] getJobUpdate start
+[10:20:10] getJobUpdate finished
+[10:20:16] getJobUpdate start
+[10:20:16] getJobUpdate finished
+[10:20:21] getJobUpdate start
+[10:20:21] getJobUpdate finished
+[10:20:26] getJobUpdate start
+[10:20:27] getJobUpdate finished
+[10:20:32] getJobUpdate start
+[10:20:32] getJobUpdate finished
+[10:20:37] getJobUpdate start
+[10:20:37] getJobUpdate finished
+[10:20:42] getJobUpdate start
+[10:20:42] getJobUpdate finished
+[10:20:47] getJobUpdate start
+[10:20:47] getJobUpdate finished
+[10:20:53] getJobUpdate start
+[10:20:53] getJobUpdate finished
+[10:20:58] getJobUpdate start
+[10:20:58] getJobUpdate finished
+[10:21:04] getJobUpdate start
+[10:21:04] getJobUpdate finished
+[10:21:09] getJobUpdate start
+[10:21:09] getJobUpdate finished
+[10:21:15] getJobUpdate start
+[10:21:15] getJobUpdate finished
+[10:21:21] getJobUpdate start
+[10:21:21] getJobUpdate finished
+[10:21:26] getJobUpdate start
+[10:21:26] getJobUpdate finished
+[10:21:32] getJobUpdate start
+[10:21:32] getJobUpdate finished
+[10:21:37] getJobUpdate start
+[10:21:37] getJobUpdate finished
+[10:21:42] getJobUpdate start
+[10:21:43] getJobUpdate finished
+[10:21:48] getJobUpdate start
+[10:21:48] getJobUpdate finished
+[10:21:53] getJobUpdate start
+[10:21:54] getJobUpdate finished
+[10:21:59] getJobUpdate start
+[10:21:59] getJobUpdate finished
+[10:22:05] getJobUpdate start
+[10:22:05] getJobUpdate finished
+[10:22:10] getJobUpdate start
+[10:22:10] getJobUpdate finished
+[10:22:16] getJobUpdate start
+[10:22:16] getJobUpdate finished
+[10:22:21] getJobUpdate start
+[10:22:21] getJobUpdate finished
+[10:22:27] getJobUpdate start
+[10:22:27] getJobUpdate finished
+[10:22:33] getJobUpdate start
+[10:22:33] getJobUpdate finished
+[10:22:38] getJobUpdate start
+[10:22:38] getJobUpdate finished
+[10:22:43] getJobUpdate start
+[10:22:43] getJobUpdate finished
+[10:22:49] getJobUpdate start
+[10:22:49] getJobUpdate finished
+[10:22:54] getJobUpdate start
+[10:22:55] getJobUpdate finished
+[10:23:00] getJobUpdate start
+[10:23:00] getJobUpdate finished
+[10:23:05] getJobUpdate start
+[10:23:05] getJobUpdate finished
+[10:23:11] getJobUpdate start
+[10:23:11] getJobUpdate finished
+[10:23:16] getJobUpdate start
+[10:23:16] getJobUpdate finished
+[10:23:22] getJobUpdate start
+[10:23:22] getJobUpdate finished
+[10:23:27] getJobUpdate start
+[10:23:27] getJobUpdate finished
+[10:23:33] getJobUpdate start
+[10:23:33] getJobUpdate finished
+[10:23:36] Flyver/Prototype 1/10 ms solver finished at ma maj 3 10:23:36 2021 on KOPERNIKUS with code = 0
+[10:23:36] Analysis::importSolverFiles = 0.348 sec
+[10:23:37] VizDataInterface::getBoundaryFEData = 0.233 sec
+[10:23:37] VizDataInterface::setupWallOutlineData = 0.02 sec
+[10:23:38] Flyver/Prototype 1/10 ms job finished at ma maj 3 10:23:36 2021 on KOPERNIKUS
+[10:26:42] Login expiration: ma maj 17 10:06:34 2021
+[10:26:42] Token expiration: on maj 5 10:06:34 2021
+[10:26:42] Analysis::exportJobFiles = 0.154 sec
+[10:26:42] Flyver/Prototype 1/10 ms job started at ma maj 3 10:26:42 2021 on KOPERNIKUS
+[10:26:43] Flyver/Prototype 1/10 ms solver started at ma maj 3 10:26:43 2021 on KOPERNIKUS
+[10:26:46] getJobUpdate start
+[10:26:47] VizDataInterface::getBoundaryFEData = 0.264 sec
+[10:26:47] VizDataInterface::setupWallOutlineData = 0.022 sec
+[10:26:47] getJobUpdate finished
+[10:26:50] Could not find message key: (solver, AnalyzeC, Turbulent Incompressible Flow is ON)
+[10:26:50] Could not find message key: (solver, AnalyzeC, Turbulence model: Standard k-epsilon)
+[10:26:50] Could not find message key: (solver, AnalyzeC, Intelligent Wall Formulation: OFF)
+[10:26:57] getJobUpdate start
+[10:26:57] getJobUpdate finished
+[10:27:02] getJobUpdate start
+[10:27:02] getJobUpdate finished
+[10:27:07] getJobUpdate start
+[10:27:07] getJobUpdate finished
+[10:27:12] getJobUpdate start
+[10:27:12] getJobUpdate finished
+[10:27:16] getJobUpdate start
+[10:27:17] getJobUpdate finished
+[10:27:21] getJobUpdate start
+[10:27:21] getJobUpdate finished
+[10:27:26] getJobUpdate start
+[10:27:26] getJobUpdate finished
+[10:27:31] getJobUpdate start
+[10:27:31] getJobUpdate finished
+[10:27:36] getJobUpdate start
+[10:27:36] getJobUpdate finished
+[10:27:41] getJobUpdate start
+[10:27:41] getJobUpdate finished
+[10:27:46] getJobUpdate start
+[10:27:46] getJobUpdate finished
+[10:27:51] getJobUpdate start
+[10:27:51] getJobUpdate finished
+[10:27:55] getJobUpdate start
+[10:27:56] getJobUpdate finished
+[10:28:00] getJobUpdate start
+[10:28:01] getJobUpdate finished
+[10:28:05] getJobUpdate start
+[10:28:06] getJobUpdate finished
+[10:28:11] getJobUpdate start
+[10:28:11] getJobUpdate finished
+[10:28:15] getJobUpdate start
+[10:28:16] getJobUpdate finished
+[10:28:20] getJobUpdate start
+[10:28:20] getJobUpdate finished
+[10:28:25] getJobUpdate start
+[10:28:25] getJobUpdate finished
+[10:28:30] getJobUpdate start
+[10:28:30] getJobUpdate finished
+[10:28:35] getJobUpdate start
+[10:28:35] getJobUpdate finished
+[10:28:40] getJobUpdate start
+[10:28:40] getJobUpdate finished
+[10:28:45] getJobUpdate start
+[10:28:45] getJobUpdate finished
+[10:28:50] getJobUpdate start
+[10:28:50] getJobUpdate finished
+[10:28:55] getJobUpdate start
+[10:28:55] getJobUpdate finished
+[10:29:00] getJobUpdate start
+[10:29:00] getJobUpdate finished
+[10:29:05] getJobUpdate start
+[10:29:05] getJobUpdate finished
+[10:29:10] getJobUpdate start
+[10:29:10] getJobUpdate finished
+[10:29:15] getJobUpdate start
+[10:29:15] getJobUpdate finished
+[10:29:20] getJobUpdate start
+[10:29:20] getJobUpdate finished
+[10:29:24] getJobUpdate start
+[10:29:25] getJobUpdate finished
+[10:29:29] getJobUpdate start
+[10:29:29] getJobUpdate finished
+[10:29:34] getJobUpdate start
+[10:29:34] getJobUpdate finished
+[10:29:39] getJobUpdate start
+[10:29:39] getJobUpdate finished
+[10:29:44] getJobUpdate start
+[10:29:44] getJobUpdate finished
+[10:29:49] getJobUpdate start
+[10:29:49] getJobUpdate finished
+[10:29:53] getJobUpdate start
+[10:29:54] getJobUpdate finished
+[10:29:58] getJobUpdate start
+[10:29:59] getJobUpdate finished
+[10:30:03] getJobUpdate start
+[10:30:03] getJobUpdate finished
+[10:30:08] getJobUpdate start
+[10:30:09] getJobUpdate finished
+[10:30:13] getJobUpdate start
+[10:30:14] getJobUpdate finished
+[10:30:18] getJobUpdate start
+[10:30:18] getJobUpdate finished
+[10:30:23] getJobUpdate start
+[10:30:23] getJobUpdate finished
+[10:30:28] getJobUpdate start
+[10:30:28] getJobUpdate finished
+[10:30:33] getJobUpdate start
+[10:30:34] getJobUpdate finished
+[10:30:38] getJobUpdate start
+[10:30:39] getJobUpdate finished
+[10:30:43] getJobUpdate start
+[10:30:44] getJobUpdate finished
+[10:30:49] getJobUpdate start
+[10:30:49] getJobUpdate finished
+[10:30:54] getJobUpdate start
+[10:30:54] getJobUpdate finished
+[10:30:59] getJobUpdate start
+[10:30:59] getJobUpdate finished
+[10:31:04] getJobUpdate start
+[10:31:04] getJobUpdate finished
+[10:31:09] getJobUpdate start
+[10:31:09] getJobUpdate finished
+[10:31:14] getJobUpdate start
+[10:31:14] getJobUpdate finished
+[10:31:19] getJobUpdate start
+[10:31:19] getJobUpdate finished
+[10:31:24] getJobUpdate start
+[10:31:24] getJobUpdate finished
+[10:31:32] Flyver/Prototype 1/10 ms solver finished at ma maj 3 10:31:32 2021 on KOPERNIKUS with code = 0
+[10:31:32] Analysis::importSolverFiles = 0.179 sec
+[10:31:33] VizDataInterface::getBoundaryFEData = 0.224 sec
+[10:31:33] VizDataInterface::setupWallOutlineData = 0.017 sec
+[10:31:34] Flyver/Prototype 1/10 ms job finished at ma maj 3 10:31:32 2021 on KOPERNIKUS
+[10:33:22] Analysis::writeGBIFile = 1.789 sec
+[10:33:22] Login expiration: ma maj 17 10:06:34 2021
+[10:33:22] Token expiration: on maj 5 10:06:34 2021
+[10:33:22] Analysis::exportJobFiles = 0.131 sec
+[10:33:22] Flyver/Prototype 1/10 ms job started at ma maj 3 10:33:22 2021 on KOPERNIKUS
+[10:33:23] Flyver/Prototype 1/10 ms solver started at ma maj 3 10:33:23 2021 on KOPERNIKUS
+[10:33:35] getJobUpdate start
+[10:33:37] CADModel::loadGeometryDatabase = 1.79 sec
+[10:33:37] VizDataInterface::getBoundaryFEData = 0.328 sec
+[10:33:37] VizDataInterface::setupWallOutlineData = 0.035 sec
+[10:33:38] getJobUpdate finished
+[10:33:39] Could not find message key: (solver, AnalyzeC, Turbulent Incompressible Flow is ON)
+[10:33:39] Could not find message key: (solver, AnalyzeC, Turbulence model: Standard k-epsilon)
+[10:33:39] Could not find message key: (solver, AnalyzeC, Intelligent Wall Formulation: OFF)
+[10:33:46] getJobUpdate start
+[10:33:46] getJobUpdate finished
+[10:33:52] getJobUpdate start
+[10:33:53] getJobUpdate finished
+[10:33:58] getJobUpdate start
+[10:33:58] getJobUpdate finished
+[10:34:04] getJobUpdate start
+[10:34:04] getJobUpdate finished
+[10:34:09] getJobUpdate start
+[10:34:09] getJobUpdate finished
+[10:34:14] getJobUpdate start
+[10:34:14] getJobUpdate finished
+[10:34:19] getJobUpdate start
+[10:34:20] getJobUpdate finished
+[10:34:25] getJobUpdate start
+[10:34:25] getJobUpdate finished
+[10:34:30] getJobUpdate start
+[10:34:30] getJobUpdate finished
+[10:34:36] getJobUpdate start
+[10:34:36] getJobUpdate finished
+[10:34:41] getJobUpdate start
+[10:34:41] getJobUpdate finished
+[10:34:46] getJobUpdate start
+[10:34:46] getJobUpdate finished
+[10:34:52] getJobUpdate start
+[10:34:52] getJobUpdate finished
+[10:34:57] getJobUpdate start
+[10:34:57] getJobUpdate finished
+[10:35:02] getJobUpdate start
+[10:35:02] getJobUpdate finished
+[10:35:08] getJobUpdate start
+[10:35:08] getJobUpdate finished
+[10:35:14] getJobUpdate start
+[10:35:14] getJobUpdate finished
+[10:35:19] getJobUpdate start
+[10:35:19] getJobUpdate finished
+[10:35:25] getJobUpdate start
+[10:35:25] getJobUpdate finished
+[10:35:30] getJobUpdate start
+[10:35:31] getJobUpdate finished
+[10:35:36] getJobUpdate start
+[10:35:36] getJobUpdate finished
+[10:35:42] getJobUpdate start
+[10:35:42] getJobUpdate finished
+[10:35:47] getJobUpdate start
+[10:35:47] getJobUpdate finished
+[10:35:52] getJobUpdate start
+[10:35:53] getJobUpdate finished
+[10:35:58] getJobUpdate start
+[10:35:58] getJobUpdate finished
+[10:36:04] getJobUpdate start
+[10:36:04] getJobUpdate finished
+[10:36:09] getJobUpdate start
+[10:36:09] getJobUpdate finished
+[10:36:15] getJobUpdate start
+[10:36:15] getJobUpdate finished
+[10:36:21] getJobUpdate start
+[10:36:21] getJobUpdate finished
+[10:36:26] getJobUpdate start
+[10:36:27] getJobUpdate finished
+[10:36:33] getJobUpdate start
+[10:36:33] getJobUpdate finished
+[10:36:39] getJobUpdate start
+[10:36:39] getJobUpdate finished
+[10:36:44] getJobUpdate start
+[10:36:44] getJobUpdate finished
+[10:36:50] getJobUpdate start
+[10:36:50] getJobUpdate finished
+[10:36:55] getJobUpdate start
+[10:36:55] getJobUpdate finished
+[10:37:00] getJobUpdate start
+[10:37:01] getJobUpdate finished
+[10:37:06] getJobUpdate start
+[10:37:06] getJobUpdate finished
+[10:37:12] getJobUpdate start
+[10:37:12] getJobUpdate finished
+[10:37:17] getJobUpdate start
+[10:37:17] getJobUpdate finished
+[10:37:23] getJobUpdate start
+[10:37:23] getJobUpdate finished
+[10:37:28] getJobUpdate start
+[10:37:28] getJobUpdate finished
+[10:37:34] getJobUpdate start
+[10:37:34] getJobUpdate finished
+[10:37:39] getJobUpdate start
+[10:37:39] getJobUpdate finished
+[10:37:48] Flyver/Prototype 1/10 ms solver finished at ma maj 3 10:37:48 2021 on KOPERNIKUS with code = 0
+[10:37:48] Analysis::importSolverFiles = 0.185 sec

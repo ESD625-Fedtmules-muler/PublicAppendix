@@ -1,0 +1,26 @@
+﻿0
+15 6
+1 0
+200 0
+10 ms.glp CFD 21.0
+"10 ms.g1" "Velocity Magnitude"
+"10 ms.g2" "Vx-Velocity"
+"10 ms.g3" "Vy-Velocity"
+"10 ms.g4" "Vz-Velocity"
+"10 ms.g5" "Static Pressure"
+"10 ms.g6" "Temperature"
+"10 ms.g7" "Scalar variable"
+"10 ms.g8" "Density"
+"10 ms.g9" "Viscosity"
+"10 ms.g10" "Shear Stress XY (Tau-XY)"
+"10 ms.g11" "Shear Stress YZ (Tau-YZ)"
+"10 ms.g12" "Shear Stress ZX (Tau-ZX)"
+"10 ms.g13" "Shear Stress (Tau) Magnitude"
+"10 ms.g14" "Wall Film Coefficients"
+"10 ms.g15" "Wall Heat Flux"
+"10 ms.g16" "Velocity Vector"
+"10 ms.g17" "XY Proj. Velocity Vector"
+"10 ms.g18" "XZ Proj. Velocity Vector"
+"10 ms.g19" "YZ Proj. Velocity Vector"
+"10 ms.g20" "Shear Stress (Tau)"
+"10 ms.g21" "Wall Heat Flux"

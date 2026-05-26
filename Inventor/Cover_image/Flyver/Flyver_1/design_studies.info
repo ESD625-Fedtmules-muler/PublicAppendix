@@ -1,0 +1,7 @@
+<cfd_design_studies user_name="armin" version="21.0.20201120">
+ <design_study instance_id="id_not_defined" name="Flyver_1" folder="C:/Users/armin/Documents/Inventor 3D filer/Flyver/Flyver_1" study_id="a106fc69-1051-4d49-92ec-5806c2fbcb7c">
+  <design model_id="Flyver.cfdsmt" launcher_type="CP_INVENTOR" lock_status="false" name="Design 2">
+   <analysis name="Scenario 2"/>
+  </design>
+ </design_study>
+</cfd_design_studies>

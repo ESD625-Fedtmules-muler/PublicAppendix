@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radio Dashboard - Switch State Tracking V8 (Offsets)</title>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/plotly.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Courier New', monospace; background: #f8fafc; color: #334155; min-height: 100vh; overflow: hidden; }
+
+header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; border-bottom: 1px solid #e2e8f0; background: #ffffff; height: 52px; }
+.logo { width: 28px; height: 28px; border: 1.5px solid #2563eb; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #2563eb; }
+header h1 { font-size: 13px; font-weight: 700; letter-spacing: 2.5px; color: #0f172a; text-transform: uppercase; }
+header span { font-size: 10px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+
+.layout { display: grid; grid-template-columns: 300px 1fr; height: calc(100vh - 52px); }
+
+aside { background: #ffffff; border-right: 1px solid #e2e8f0; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+
+.section-label { font-size: 9px; letter-spacing: 2px; color: #64748b; text-transform: uppercase; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #f1f5f9; }
+
+.file-slots { display: flex; flex-direction: column; gap: 7px; }
+.file-slot { border: 1px dashed #cbd5e1; border-radius: 7px; padding: 8px 10px; position: relative; transition: border-color 0.15s, background 0.15s; }
+.file-slot:hover { border-color: #2563eb; background: #f8fafc; }
+.file-slot.loaded { border-style: solid; border-color: #2563eb; background: #f8fafc; }
+.slot-click-area { position: relative; cursor: pointer; margin-bottom: 6px; }
+.slot-click-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; z-index: 1; }
+.slot-header { display: flex; align-items: center; gap: 7px; }
+.slot-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.slot-name { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #475569; }
+.slot-filename { font-size: 9px; color: #2563eb; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot-empty { font-size: 9px; color: #94a3b8; }
+.slot-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; position: relative; z-index: 2; }
+.slot-inp-group { display: flex; flex-direction: column; gap: 2px; }
+.slot-inp-group label { font-size: 8px; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+.slot-inp-group input { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 5px; font-size: 10px; font-family: 'Courier New', monospace; color: #1e293b; outline: none; width: 100%; }
+.slot-inp-group input:focus { border-color: #2563eb; }
+
+.param-row { display: flex; flex-direction: column; gap: 3px; }
+.param-row label { font-size: 9px; color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+.param-row input { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 8px; font-size: 11px; font-family: 'Courier New', monospace; color: #1e293b; outline: none; width: 100%; }
+.param-row input:focus { border-color: #2563eb; }
+
+.tog-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.tog-btn {
+  padding: 4px 7px; flex: 1;
+  background: #ffffff; border: 1px solid #cbd5e1;
+  border-radius: 4px; color: #64748b;
+  font-family: 'Courier New', monospace; font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.12s; text-align: center; user-select: none;
+  outline: none;
+}
+.tog-btn.active { background: #eff6ff; border-color: #2563eb; color: #2563eb; }
+.tog-btn:hover:not(.active) { border-color: #94a3b8; color: #334155; }
+
+.run-btn { background: #eff6ff; border: 1px solid #2563eb; border-radius: 7px; color: #2563eb; font-family: 'Courier New', monospace; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 9px; cursor: pointer; transition: background 0.15s, color 0.15s; width: 100%; margin-top: auto; flex-shrink: 0; }
+.run-btn:hover { background: #2563eb; color: #fff; }
+
+.status { font-size: 9px; color: #dc2626; text-align: center; min-height: 12px; letter-spacing: 0.5px; }
+.status.ok { color: #2563eb; }
+
+main { display: flex; flex-direction: column; background: #ffffff; overflow: hidden; }
+.toolbar { display: flex; align-items: center; justify-content: space-between; padding: 7px 16px; border-bottom: 1px solid #e2e8f0; font-size: 10px; color: #64748b; flex-shrink: 0; height: 36px; }
+.legend-row { display: flex; gap: 14px; align-items: center; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #64748b; }
+.legend-circle { width: 7px; height: 7px; border-radius: 50%; }
+.metric-badge { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 4px; padding: 2px 8px; }
+
+.save-btn {
+  background: #eff6ff; border: 1px solid #2563eb; border-radius: 4px; color: #2563eb;
+  font-family: 'Courier New', monospace; font-size: 9px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; padding: 4px 6px;
+  cursor: pointer; transition: all 0.12s;
+}
+.save-btn:hover { background: #2563eb; color: #fff; }
+
+.plots-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: calc(100vh - 52px - 36px);
+  background: #e2e8f0;
+  gap: 1px;
+  transition: grid-template-columns 0.2s ease, grid-template-rows 0.2s ease;
+}
+.plots-grid > div {
+  background: #ffffff;
+  overflow: hidden;
+  height: 100%;
+}
+#plot-time, #plot-map {
+  width: 100%;
+  height: 100%;
+}
+
+.stat-card {
+  border-left: 4px solid #cbd5e1;
+  padding: 6px 10px;
+  margin-bottom: 12px;
+  background: #fdfdfd;
+}
+.stat-card .label { font-size: 9px; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+.stat-card .value { font-size: 15px; font-weight: 700; color: #1e293b; font-family: 'Courier New', monospace; }
+
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">RF</div>
+  <div>
+    <h1>Radio Dashboard</h1>
+    <span>Switch State Tracking & Offsets V8</span>
+  </div>
+</header>
+
+<div class="layout">
+<aside>
+
+  <div>
+    <div class="section-label">Data sources (1–2)</div>
+    <div class="file-slots" id="file-slots"></div>
+  </div>
+
+  <div>
+    <div class="section-label">Route &amp; Data Processing</div>
+    <div style="display:flex; flex-direction:column; gap:4px; margin-bottom: 8px;">
+      <div class="slot-inp-group">
+        <label>Start (Lat, Lon)</label>
+        <div style="display:flex;gap:4px">
+          <input type="number" id="rt-start-lat" value="57.013764" step="0.000001">
+          <input type="number" id="rt-start-lon" value="9.988760" step="0.000001">
+        </div>
+      </div>
+      <div class="slot-inp-group">
+        <label>Corner (Lat, Lon)</label>
+        <div style="display:flex;gap:4px">
+          <input type="number" id="rt-corner-lat" value="57.013743" step="0.000001">
+          <input type="number" id="rt-corner-lon" value="9.989808" step="0.000001">
+        </div>
+      </div>
+      <div class="slot-inp-group">
+        <label>End (Lat, Lon)</label>
+        <div style="display:flex;gap:4px">
+          <input type="number" id="rt-end-lat" value="57.014855" step="0.000001">
+          <input type="number" id="rt-end-lon" value="9.989923" step="0.000001">
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+        <div class="slot-inp-group">
+          <label>Maks Afstand (m)</label>
+          <input type="number" id="rt-max-dist" value="400" step="1">
+        </div>
+        <div class="slot-inp-group">
+          <label>Smooth Radius (m)</label>
+          <input type="number" id="rt-smooth-radius" value="5" min="0" step="0.1">
+        </div>
+      </div>
+    </div>
+    <div class="tog-row">
+      <div class="tog-btn active" id="btn-orig-map" onclick="setMapMode('orig')">Orig Map</div>
+      <div class="tog-btn" id="btn-proj-map" onclick="setMapMode('proj')">Proj Map</div>
+    </div>
+    <div class="tog-row" style="margin-top:4px;">
+      <div class="tog-btn active" id="btn-raw-data" onclick="setDataMode('raw')">Raw Data</div>
+      <div class="tog-btn" id="btn-smooth-data" onclick="setDataMode('smooth')">Smoothed</div>
+    </div>
+  </div>
+
+  <div id="sinr-stats-container">
+    <div class="section-label">Gennemsnitlig SINR</div>
+    <div class="slot-empty">Indlæs data for at se gennemsnit...</div>
+  </div>
+
+  <div>
+    <div class="section-label">Jammer & Base Position</div>
+    <div style="display:flex; flex-direction:column; gap:4px; margin-bottom: 8px;">
+      <div class="slot-inp-group">
+        <label>Base (Lat, Lon)</label>
+        <div style="display:flex;gap:4px">
+          <input type="number" id="base-lat" value="57.014034" step="0.000001">
+          <input type="number" id="base-lon" value="9.988742" step="0.000001">
+        </div>
+      </div>
+      <div class="slot-inp-group">
+        <label>Jammer (Lat, Lon)</label>
+        <div style="display:flex;gap:4px">
+          <input type="number" id="jammer-lat" value="57.013982" step="0.000001">
+          <input type="number" id="jammer-lon" value="9.989921" step="0.000001">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Metrics (Distance plot)</div>
+    <div class="tog-row" id="time-metric-tog">
+      <div class="tog-btn active" data-m="P_Signal" onclick="toggleMetric(this)">Signal</div>
+      <div class="tog-btn active" data-m="P_Channel" onclick="toggleMetric(this)">Interference</div>
+      <div class="tog-btn" data-m="SINR" onclick="toggleMetric(this)">SINR</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Right plot — map color</div>
+    <div class="tog-row" style="margin-bottom:8px;">
+      <button class="tog-btn active data-metric-btn" data-metric-mode="metric" data-metric-key="P_Signal" onclick="selectMapColorMode(this)">Signal</button>
+      <button class="tog-btn data-metric-btn" data-metric-mode="metric" data-metric-key="P_Channel" onclick="selectMapColorMode(this)">Interference</button>
+      <button class="tog-btn data-metric-btn" data-metric-mode="metric" data-metric-key="SINR" onclick="selectMapColorMode(this)">SINR</button>
+    </div>
+    <div class="tog-row">
+      <button class="tog-btn data-metric-btn" data-metric-mode="switch_state" onclick="selectMapColorMode(this)" id="btn-color-state">Switch State</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px; margin-top:8px;" id="cmin-max-row">
+      <div class="param-row"><label>Min dB</label><input type="number" id="cmin" value="-95"></div>
+      <div class="param-row"><label>Max dB</label><input type="number" id="cmax" value="-50"></div>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <button class="run-btn" onclick="runDashboard()">&#9654; &nbsp;Process & Plot</button>
+
+</aside>
+
+<main>
+  <div class="toolbar">
+    <span id="toolbar-hint">Hover distance plot &harr; highlights location on map</span>
+    
+    <div style="display:flex; align-items:center; gap: 8px; font-size: 9px; color: #475569;">
+      <div style="display:flex; align-items:center; gap: 3px;">
+        <label>Bredde:</label>
+        <input type="number" id="img-width" value="1920" style="width: 45px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: inherit;">
+      </div>
+      <div style="display:flex; align-items:center; gap: 3px;">
+        <label>Højde:</label>
+        <input type="number" id="img-height" value="1080" style="width: 45px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: inherit;">
+      </div>
+      <div style="display:flex; align-items:center; gap: 3px;">
+        <label>Tekstskala:</label>
+        <input type="number" id="img-font-scale" value="2" step="0.1" style="width: 40px; padding: 2px 4px; border: 1px solid #cbd5e1; border-radius: 3px; font-family: inherit;">
+      </div>
+      
+      <button class="save-btn" onclick="toggleLayout()">Skift layout</button>
+      <button class="save-btn" onclick="savePlot('plot-time')">Gem Tidsplot</button>
+      <button class="save-btn" onclick="savePlot('plot-map')">Gem Kort</button>
+      <button class="save-btn" onclick="saveBothPlots()">Gem Begge</button>
+      <button class="save-btn" style="background:#f0fdf4;border-color:#16a34a;color:#16a34a;" onclick="exportDistanceCSV()">↓ CSV</button>
+      <label class="save-btn" style="background:#fefce8;border-color:#ca8a04;color:#ca8a04;cursor:pointer;" title="Load exported CSV og vis sammenligning">
+        ↑ Import CSV
+        <input type="file" accept=".csv" style="display:none" onchange="importCompareCSV(this)">
+      </label>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="legend-row" id="legend-row"></div>
+      <div class="metric-badge" id="metric-badge">Signal</div>
+    </div>
+  </div>
+  
+  <div class="plots-grid">
+    <div id="plot-time"></div>
+    <div id="plot-map"></div>
+  </div>
+</main>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const COLORS     = ['#3a7bd5', '#e05c5c'];
+const SLOT_NAMES = ['Drone DIR 1', 'Drone DIR 2'];
+const N_SLOTS    = 2;
+const METRIC_LABELS = { P_Signal: 'Signal', P_Channel: 'Interference', SINR: 'SINR' };
+const METRIC_UNIT   = { P_Signal: 'dBm',  P_Channel: 'dBm',     SINR: 'dB'  };
+const METRIC_LINE   = { P_Signal: { width:2, dash:'solid' }, P_Channel: { width:1, dash:'dot' }, SINR: { width:1.5, dash:'dash' } };
+
+// Categorical Colors for Switch States
+const STATE_COLORS = {
+  'ERROR': '#ef4444', 
+  'DIR_TX_OMNI': '#64748b', 
+  'DIR_RX_OMNI': '#fb8072', 
+  'DIR_RX_0': '#8dd3c7',
+  'DIR_RX_1': '#decbe4',
+  'DIR_RX_2': '#2ca02c',
+  'DIR_RX_3': '#d62728',
+  'DIR_RX_4': '#ffffb3',
+  'DIR_RX_5': '#fdb462',
+  'DIR_RX_6': '#80b1d3',
+  'DIR_RX_7': '#bebada'
+};
+
+let datasets      = Array(N_SLOTS).fill(null);
+let plotData      = [];
+let activeMapMetricKey = 'P_Signal';
+let activeMetrics      = new Set(['P_Signal', 'P_Channel']); 
+
+let mapMode = 'orig'; 
+let dataMode = 'raw'; 
+let layoutMode = 'side';
+let activeMapColorMode = 'metric'; 
+
+function setMapMode(mode) {
+  mapMode = mode;
+  document.getElementById('btn-orig-map').classList.toggle('active', mode==='orig');
+  document.getElementById('btn-proj-map').classList.toggle('active', mode==='proj');
+  if(plotData.length) runDashboard();
+}
+function setDataMode(mode) {
+  dataMode = mode;
+  document.getElementById('btn-raw-data').classList.toggle('active', mode==='raw');
+  document.getElementById('btn-smooth-data').classList.toggle('active', mode==='smooth');
+  if(plotData.length) runDashboard();
+}
+
+function toggleLayout() {
+  const grid = document.querySelector('.plots-grid');
+  if (!grid) return;
+  if (layoutMode === 'side') {
+    layoutMode = 'stacked';
+    grid.style.gridTemplateColumns = '1fr';
+    grid.style.gridTemplateRows = '1fr 1fr';
+  } else {
+    layoutMode = 'side';
+    grid.style.gridTemplateColumns = '1fr 1fr';
+    grid.style.gridTemplateRows = 'none';
+  }
+  setTimeout(() => {
+    if (typeof Plotly !== 'undefined') {
+      Plotly.Plots.resize('plot-time');
+      Plotly.Plots.resize('plot-map');
+    }
+  }, 100);
+}
+
+function buildSidebar() {
+  const slotsEl = document.getElementById('file-slots');
+  for (let i = 0; i < N_SLOTS; i++) {
+    const col = COLORS[i];
+    const slot = document.createElement('div');
+    slot.className = 'file-slot';
+    slot.id = `slot-${i}`;
+    slot.innerHTML = `
+      <div class="slot-click-area">
+        <input type="file" accept=".csv" onchange="loadFile(${i},this)">
+        <div class="slot-header">
+          <div class="slot-dot" style="background:${col}"></div>
+          <div class="slot-name">${SLOT_NAMES[i]}</div>
+        </div>
+        <div class="slot-filename slot-empty" id="slot-fname-${i}">Klik for at loade CSV&hellip;</div>
+      </div>
+      <div class="slot-inputs">
+        <div class="slot-inp-group"><label>Label</label><input type="text" id="slot-label-${i}" value="${SLOT_NAMES[i]}"></div>
+        <div class="slot-inp-group"><label>GPS node</label><input type="number" id="slot-gps-${i}" value="3" min="0"></div>
+        <div class="slot-inp-group"><label>TX node</label><input type="number" id="slot-tx-${i}" value="1" min="0"></div>
+      </div>
+      <div class="slot-inputs" style="grid-template-columns: 1fr 1fr; margin-top: 4px; padding-top: 4px; border-top: 1px dashed #e2e8f0;">
+        <div class="slot-inp-group"><label>Offset Signal (dB)</label><input type="number" id="slot-offset-sig-${i}" value="0" step="0.1"></div>
+        <div class="slot-inp-group"><label>Offset Interf. (dB)</label><input type="number" id="slot-offset-chan-${i}" value="0" step="0.1"></div>
+      </div>`;
+    slotsEl.appendChild(slot);
+  }
+}
+
+function loadFile(idx, input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      datasets[idx] = parseCSV(e.target.result);
+      const fnEl = document.getElementById(`slot-fname-${idx}`);
+      fnEl.textContent = file.name; fnEl.classList.remove('slot-empty');
+      document.getElementById(`slot-${idx}`).classList.add('loaded');
+      setStatus('Loaded: ' + file.name, true);
+    } catch(err) { setStatus('CSV parse error: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const header = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).filter(l=>l.trim()).map(line => {
+    const vals = splitCSVLine(line); const row = {};
+    header.forEach((h,i) => { row[h] = vals[i] ? vals[i].trim().replace(/^"|"$/g,'') : ''; });
+    return row;
+  });
+}
+function splitCSVLine(line) {
+  const r=[]; let c='', inQ=false;
+  for(const ch of line){ if(ch==='"'){inQ=!inQ;} else if(ch===','&&!inQ){r.push(c);c='';} else{c+=ch;} }
+  r.push(c); return r;
+}
+
+const R_EARTH = 6371000;
+function toRad(deg) { return deg * Math.PI / 180; }
+function toDeg(rad) { return rad * 180 / Math.PI; }
+function latlon_to_xy(lat, lon, lat0, lon0) {
+  const dlat = toRad(lat - lat0); const dlon = toRad(lon - lon0);
+  const x = dlon * Math.cos(toRad(lat0)) * R_EARTH; const y = dlat * R_EARTH;
+  return {x, y};
+}
+function xy_to_latlon(x, y, lat0, lon0) {
+  const dlat = y / R_EARTH; const dlon = x / (R_EARTH * Math.cos(toRad(lat0)));
+  return { lat: lat0 + toDeg(dlat), lon: lon0 + toDeg(dlon) };
+}
+function dot(v1, v2) { return v1.x * v2.x + v1.y * v2.y; }
+function sub(v1, v2) { return {x: v1.x - v2.x, y: v1.y - v2.y}; }
+function add(v1, v2) { return {x: v1.x + v2.x, y: v1.y + v2.y}; }
+function mul(v, s) { return {x: v.x * s, y: v.y * s}; }
+function norm(v) { return Math.sqrt(v.x*v.x + v.y*v.y); }
+function distSq(v1, v2) { const dx = v1.x-v2.x, dy = v1.y-v2.y; return dx*dx + dy*dy; }
+function project_point_to_line(P, A, d) {
+  const t = dot(sub(P, A), d) / dot(d, d);
+  return add(A, mul(d, t));
+}
+
+function filterAndProcessData(df, gpsNodeId, txNode, routeCoords, maxDist, smoothRadius, offsetSig = 0, offsetChan = 0) {
+  const TOL = 150; 
+  const gpsRows = df
+    .filter(r => +r.node_id===gpsNodeId && r.latitude && +r.latitude!==0)
+    .map(r => ({ ts: new Date(r.timestamp).getTime(), lat: +r.latitude, lon: +r.longitude }))
+    .sort((a,b)=>a.ts-b.ts);
+  const sigRows = df
+    .filter(r => +r.node_id===txNode && +r.P_Signal!==0)
+    .map(r => ({ 
+      ts: new Date(r.timestamp).getTime(), 
+      timestamp:r.timestamp, 
+      P_Signal: (+r.P_Signal) + offsetSig, 
+      P_Channel: (+r.P_Channel) + offsetChan,
+      switch_state: r.switch_state || 'UNKNOWN'
+    }))
+    .sort((a,b)=>a.ts-b.ts);
+  
+  if (!gpsRows.length || !sigRows.length) return [];
+  
+  let merged = sigRows.map(sig => {
+    let lo=0, hi=gpsRows.length-1, best=null, bestDiff=Infinity;
+    while(lo<=hi){ const mid=(lo+hi)>>1, d=Math.abs(gpsRows[mid].ts-sig.ts);
+      if(d<bestDiff){bestDiff=d;best=gpsRows[mid];} if(gpsRows[mid].ts<sig.ts)lo=mid+1;else hi=mid-1; }
+    if(!best||bestDiff>TOL) return null;
+    return { 
+      timestamp:sig.timestamp, ts:sig.ts, P_Signal:sig.P_Signal, P_Channel:sig.P_Channel,
+      switch_state: sig.switch_state,
+      SINR:+(sig.P_Signal-sig.P_Channel).toFixed(2), gps_lat:best.lat, gps_lon:best.lon 
+    };
+  }).filter(Boolean);
+
+  merged.sort((a,b)=>a.ts-b.ts);
+
+  const { startGPS, cornerGPS, endGPS } = routeCoords;
+  const lat0 = startGPS.lat, lon0 = startGPS.lon;
+  const A = latlon_to_xy(startGPS.lat, startGPS.lon, lat0, lon0);
+  const B = latlon_to_xy(cornerGPS.lat, cornerGPS.lon, lat0, lon0);
+  const C = latlon_to_xy(endGPS.lat, endGPS.lon, lat0, lon0);
+  const d1 = sub(B, A); const d2 = sub(C, B); const L1 = norm(d1);
+
+  merged.forEach(row => {
+    const P = latlon_to_xy(row.gps_lat, row.gps_lon, lat0, lon0);
+    const proj1 = project_point_to_line(P, A, d1);
+    const proj2 = project_point_to_line(P, B, d2);
+    const dist1 = distSq(P, proj1);
+    const dist2 = distSq(P, proj2);
+    let proj_xy, dist;
+    if (dist1 < dist2) { proj_xy = proj1; dist = norm(sub(proj_xy, A)); }
+    else { proj_xy = proj2; dist = L1 + norm(sub(proj_xy, B)); }
+    const proj_ll = xy_to_latlon(proj_xy.x, proj_xy.y, lat0, lon0);
+    row.proj_lat = proj_ll.lat; row.proj_lon = proj_ll.lon;
+    row.dist_along_route = dist;
+  });
+
+  if (maxDist > 0) { merged = merged.filter(row => row.dist_along_route <= maxDist); }
+
+  const radius = Math.max(0, smoothRadius);
+  if (radius === 0) {
+    merged.forEach(r => { r.P_Signal_smooth = r.P_Signal; r.P_Channel_smooth = r.P_Channel; r.SINR_smooth = r.SINR; });
+  } else {
+    for(let i=0; i<merged.length; i++) {
+      let sumSig=0, sumChan=0, cnt=0;
+      const currentDist = merged[i].dist_along_route;
+      for(let j=0; j<merged.length; j++) {
+        if (Math.abs(merged[j].dist_along_route - currentDist) <= radius) {
+          sumSig += merged[j].P_Signal; sumChan += merged[j].P_Channel; cnt++;
+        }
+      }
+      merged[i].P_Signal_smooth = sumSig/cnt;
+      merged[i].P_Channel_smooth = sumChan/cnt;
+      merged[i].SINR_smooth = merged[i].P_Signal_smooth - merged[i].P_Channel_smooth;
+    }
+  }
+  return merged;
+}
+
+function toggleMetric(el) {
+  const m = el.dataset.m;
+  if (activeMetrics.has(m)) {
+    if (activeMetrics.size === 1) return; 
+    activeMetrics.delete(m); el.classList.remove('active');
+  } else {
+    activeMetrics.add(m); el.classList.add('active');
+  }
+  if(plotData.length) runDashboard();
+}
+
+function selectMapColorMode(buttonEl) {
+  document.querySelectorAll('.data-metric-btn').forEach(b => b.classList.remove('active'));
+  buttonEl.classList.add('active');
+
+  const mode = buttonEl.getAttribute('data-metric-mode');
+  activeMapColorMode = mode;
+
+  if (mode === 'metric') {
+    activeMapMetricKey = buttonEl.getAttribute('data-metric-key');
+    document.getElementById('cmin-max-row').style.opacity = '1.0';
+    document.getElementById('cmin-max-row').style.pointerEvents = 'auto';
+  } else if (mode === 'switch_state') {
+    document.getElementById('cmin-max-row').style.opacity = '0.5';
+    document.getElementById('cmin-max-row').style.pointerEvents = 'none';
+  }
+  if (plotData.length) runDashboard();
+}
+
+function getVal(row, m) {
+  if (dataMode === 'smooth') {
+    if (m === 'P_Signal') return row.P_Signal_smooth;
+    if (m === 'P_Channel') return row.P_Channel_smooth;
+    if (m === 'SINR') return row.SINR_smooth;
+  }
+  return row[m];
+}
+function getLatLon(row) {
+  if (mapMode === 'proj') return { lat: row.proj_lat, lon: row.proj_lon };
+  return { lat: row.gps_lat, lon: row.gps_lon };
+}
+
+function runDashboard() {
+  const loadedSlots = datasets.map((d,i)=>d?i:null).filter(i=>i!==null);
+  if (!loadedSlots.length) { setStatus('Load mindst én CSV fil.'); return; }
+
+  const routeCoords = {
+    startGPS: { lat: +document.getElementById('rt-start-lat').value, lon: +document.getElementById('rt-start-lon').value },
+    cornerGPS: { lat: +document.getElementById('rt-corner-lat').value, lon: +document.getElementById('rt-corner-lon').value },
+    endGPS: { lat: +document.getElementById('rt-end-lat').value, lon: +document.getElementById('rt-end-lon').value },
+  };
+
+  plotData = [];
+  let autoLat = null, autoLon = null;
+
+  loadedSlots.forEach(slotIdx => {
+    const gpsId  = +document.getElementById(`slot-gps-${slotIdx}`).value;
+    const txNode = +document.getElementById(`slot-tx-${slotIdx}`).value;
+    const offsetSig = +document.getElementById(`slot-offset-sig-${slotIdx}`).value || 0;
+    const offsetChan = +document.getElementById(`slot-offset-chan-${slotIdx}`).value || 0;
+    const label  = document.getElementById(`slot-label-${slotIdx}`).value || SLOT_NAMES[slotIdx];
+    
+    const processed = filterAndProcessData(datasets[slotIdx], gpsId, txNode, routeCoords, +document.getElementById('rt-max-dist').value, +document.getElementById('rt-smooth-radius').value, offsetSig, offsetChan);
+    if (!processed.length) { setStatus('Setup ' + SLOT_NAMES[slotIdx] + ': 0 rækker fundet'); return; }
+    
+    processed.sort((a,b)=>a.dist_along_route - b.dist_along_route);
+    plotData.push({ rows:processed, label, color:COLORS[slotIdx], slotIdx });
+    
+    if (autoLat === null) {
+      const p = getLatLon(processed[0]); autoLat = p.lat; autoLon = p.lon;
+    }
+  });
+
+  buildDistancePlot();
+  buildMapPlot(autoLat, autoLon);
+  setupCrossHighlight();
+  buildLegend();
+  updateSINRStats(); 
+  
+  let badgeTitle;
+  if (activeMapColorMode === 'metric') {
+    badgeTitle = METRIC_LABELS[activeMapMetricKey] + (dataMode==='smooth'?' (Spatial Smooth)':'');
+  } else {
+    badgeTitle = 'Color: Switch State';
+  }
+  document.getElementById('metric-badge').textContent = badgeTitle + ' | ' + (mapMode==='proj'?'Proj':'Orig');
+  setStatus('Plottet ' + plotData.length + ' datasæt', true);
+}
+
+function updateSINRStats() {
+  const container = document.getElementById('sinr-stats-container');
+  if (!plotData.length) { container.innerHTML = '<div class="section-label">Gennemsnitlig SINR</div><div class="slot-empty">Ingen data indlæst</div>'; return; }
+  let html = '<div class="section-label">Gennemsnitlig SINR</div>';
+  plotData.forEach(pd => {
+    const vals = pd.rows.map(r => getVal(r, 'SINR')).filter(v => v !== undefined && !isNaN(v));
+    const avg = vals.length > 0 ? (vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+    html += `<div class="stat-card" style="border-left-color: ${pd.color}"><div class="label">${pd.label} ${dataMode==='smooth' ? '(Smoothed)' : '(Raw)'}</div><div class="value">${avg.toFixed(2)} dB</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function getActiveMetrics() {
+  const ORDER = ['P_Signal','P_Channel','SINR'];
+  return ORDER.filter(m => activeMetrics.has(m));
+}
+
+function buildDistancePlot() {
+  const traces = []; const metrics = getActiveMetrics(); const n = plotData.length;
+  const scale = parseFloat(document.getElementById('img-font-scale').value) || 1.0;
+
+  plotData.forEach(pd => {
+    const xs = pd.rows.map(r => r.dist_along_route);
+    metrics.forEach(m => {
+      const style = METRIC_LINE[m]; const mname = METRIC_LABELS[m] + (dataMode==='smooth'?' (Sm)':'');
+      traces.push({
+        x: xs, y: pd.rows.map(r => getVal(r, m)),
+        name: pd.label + ' | ' + mname, type: 'scatter', mode: 'lines',
+        line: { color: pd.color, width: style.width, dash: style.dash },
+        hovertemplate: '<b>%{x:.1f} m</b><br>' + mname + ': %{y:.1f} ' + METRIC_UNIT[m] + '<extra></extra>',
+        legendgroup: pd.label,
+      });
+    });
+  });
+  for (let j=0; j<n; j++) {
+    traces.push({ x: [], y: [], type: 'scatter', mode: 'markers', marker: { color: '#ffffff', size: 10, line: { color: plotData[j].color, width: 2.5 } }, showlegend: false, hoverinfo: 'skip', name: '__hl_dist_' + j });
+  }
+  Plotly.newPlot('plot-time', traces, {
+    paper_bgcolor: '#ffffff', plot_bgcolor: '#ffffff', font: { color: '#334155', family: 'Courier New, monospace', size: 10 * scale },
+    xaxis: { title: { text: 'Distance along route (m)', font: { size: 10 * scale } }, gridcolor: '#f1f5f9', zerolinecolor: '#f1f5f9', tickfont: { size: 9 * scale } },
+    yaxis: { title: { text: 'dBm / dB', font: { size: 10 * scale } }, gridcolor: '#f1f5f9', zerolinecolor: '#f1f5f9', tickfont: { size: 9 * scale } },
+    margin: { t: 45, b: 60, l: 56, r: 12 },
+    legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: 1.02, yanchor: 'bottom', bgcolor: '#ffffff', bordercolor: '#cbd5e1', borderwidth: 1, font: { size: 9 * scale } },
+    hovermode: 'x unified',
+  }, { displayModeBar: false, responsive: true });
+}
+
+function buildMapPlot(centerLat, centerLon) {
+  const traces = []; const n = plotData.length;
+  const scale = parseFloat(document.getElementById('img-font-scale').value) || 1.0;
+  const cmin = +document.getElementById('cmin').value;
+  const cmax = +document.getElementById('cmax').value;
+
+  // Add dummy traces for the categorical legend IF in switch_state mode
+  if (activeMapColorMode === 'switch_state') {
+    Object.keys(STATE_COLORS).forEach(state => {
+      traces.push({
+        type: 'scattermapbox',
+        lat: [null], lon: [null],
+        mode: 'markers',
+        name: state.replace('DIR_',''),
+        marker: { color: STATE_COLORS[state], size: 10 },
+        showlegend: true
+      });
+    });
+  }
+
+  plotData.forEach((pd, j) => {
+    const trace = {
+      type: 'scattermapbox',
+      lat: pd.rows.map(r => getLatLon(r).lat), lon: pd.rows.map(r => getLatLon(r).lon),
+      mode: 'markers',
+      text: pd.rows.map(r => `${pd.label} | ${r.dist_along_route.toFixed(1)}m<br>State: ${r.switch_state}`),
+      customdata: pd.rows.map(r => [getVal(r, 'P_Signal').toFixed(1), getVal(r, 'P_Channel').toFixed(1), getVal(r, 'SINR').toFixed(1)]),
+      hovertemplate: '<b>%{text}</b><br>Signal: %{customdata[0]} dBm<br>Interf: %{customdata[1]} dBm<br>SINR: %{customdata[2]} dB<extra></extra>',
+      marker: { opacity: 0.9, size: 8 },
+      showlegend: false 
+    };
+
+    if (activeMapColorMode === 'metric') {
+      trace.marker.color = pd.rows.map(r => getVal(r, activeMapMetricKey));
+      trace.marker.colorscale = 'Viridis';
+      trace.marker.cmin = cmin; trace.marker.cmax = cmax;
+      trace.marker.showscale = (j === n - 1);
+      if (trace.marker.showscale) {
+        trace.marker.colorbar = { title: { text: METRIC_LABELS[activeMapMetricKey], font: { size: 9 * scale, color: '#64748b' }, side: 'right' }, thickness: 10, len: 0.7 };
+      }
+    } else if (activeMapColorMode === 'switch_state') {
+      trace.marker.color = pd.rows.map(r => STATE_COLORS[r.switch_state] || '#cccccc');
+      trace.marker.showscale = false;
+    }
+    traces.push(trace);
+  });
+
+  // Base and Jammer
+  const baseLat = parseFloat(document.getElementById('base-lat').value);
+  const baseLon = parseFloat(document.getElementById('base-lon').value);
+  if (!isNaN(baseLat) && !isNaN(baseLon)) {
+    traces.push({ type: 'scattermapbox', lat: [baseLat], lon: [baseLon], mode: 'markers+text', text: ['B'], textfont: { color: '#ffffff', size: 15, weight: 'bold' }, marker: { size: 20, color: '#dc2626' }, name: 'Base', showlegend: true });
+  }
+  const jammerLat = parseFloat(document.getElementById('jammer-lat').value);
+  const jammerLon = parseFloat(document.getElementById('jammer-lon').value);
+  if (!isNaN(jammerLat) && !isNaN(jammerLon)) {
+    traces.push({ type: 'scattermapbox', lat: [jammerLat], lon: [jammerLon], mode: 'markers+text', text: ['J'], textfont: { color: '#ffffff', size: 15, weight: 'bold' }, marker: { size: 20, color: '#d97706' }, name: 'Jammer', showlegend: true });
+  }
+
+  // Cross-highlight tracers
+  for (let j=0; j<n; j++) {
+    traces.push({ type:'scattermapbox', lat:[],lon:[],mode:'markers', marker:{size:18,color:'#ffffff',opacity:0.85}, showlegend:false, name:'__hl_'+j });
+  }
+
+  Plotly.newPlot('plot-map', traces, {
+    paper_bgcolor:'#ffffff',
+    mapbox:{ style:'open-street-map', center:{lat:centerLat,lon:centerLon}, zoom:16 },
+    margin:{ t:8, b:8, l:8, r:10 },
+    showlegend: true,
+    legend: {
+      bgcolor: 'rgba(255, 255, 255, 0.85)',
+      bordercolor: '#cbd5e1',
+      borderwidth: 1,
+      x: 0.98, xanchor: 'right',
+      y: 0.98, yanchor: 'top',
+      font: { size: 9 * scale, family: 'Courier New, monospace' },
+      title: { text: activeMapColorMode === 'switch_state' ? 'Switch States' : '', font: { size: 10 * scale, weight: 'bold' } }
+    }
+  }, { displayModeBar:false, responsive:true });
+}
+
+function setupCrossHighlight() {
+  const distEl = document.getElementById('plot-time');
+  const n = plotData.length; const metricsCount = getActiveMetrics().length;
+  distEl.on('plotly_hover', evt => {
+    if (!evt.points?.length) return;
+    const hovX = evt.points[0].x;
+    const fullData = document.getElementById('plot-map').data;
+    const hlStartIndex = fullData.findIndex(d => d.name && d.name.startsWith('__hl_'));
+    
+    plotData.forEach((pd,j) => {
+      const closest = pd.rows.reduce((b,r)=>Math.abs(r.dist_along_route-hovX)<Math.abs(b.dist_along_route-hovX)?r:b, pd.rows[0]);
+      const ll = getLatLon(closest);
+      Plotly.restyle('plot-map',{lat:[[ll.lat]],lon:[[ll.lon]]},[hlStartIndex+j]);
+    });
+  });
+}
+
+function buildLegend() {
+  document.getElementById('legend-row').innerHTML = plotData.map(pd=>`<div class="legend-item"><div class="legend-circle" style="background:${pd.color}"></div>${pd.label}</div>`).join('');
+}
+function setStatus(msg, ok=false) {
+  const el = document.getElementById('status'); el.textContent = msg; el.className='status'+(ok?' ok':'');
+}
+
+function savePlot(plotId) {
+  const plotDiv = document.getElementById(plotId); const filename = plotId === 'plot-time' ? 'distance_plot' : 'map_plot';
+  const customWidth = parseInt(document.getElementById('img-width').value) || 1920;
+  const customHeight = parseInt(document.getElementById('img-height').value) || 1080;
+  if (plotDiv) { Plotly.downloadImage(plotDiv, { format: 'png', filename: filename, width: customWidth, height: customHeight }); }
+}
+function saveBothPlots() { savePlot('plot-time'); setTimeout(() => { savePlot('plot-map'); }, 500); }
+
+// ─── CSV EXPORT ──────────────────────────────────────────────────────────────
+function exportDistanceCSV() {
+  if (!plotData.length) { setStatus('Ingen data at eksportere.'); return; }
+  const metrics = ['P_Signal','P_Channel','SINR'];
+  const header = ['dataset_label','dist_along_route','P_Signal','P_Channel','SINR',
+                  'P_Signal_smooth','P_Channel_smooth','SINR_smooth','switch_state',
+                  'gps_lat','gps_lon','proj_lat','proj_lon','timestamp'];
+  const rows = [header.join(',')];
+  plotData.forEach(pd => {
+    pd.rows.forEach(r => {
+      rows.push([
+        `"${pd.label}"`,
+        r.dist_along_route.toFixed(4),
+        r.P_Signal.toFixed(4), r.P_Channel.toFixed(4), r.SINR.toFixed(4),
+        r.P_Signal_smooth.toFixed(4), r.P_Channel_smooth.toFixed(4), r.SINR_smooth.toFixed(4),
+        `"${r.switch_state || ''}"`,
+        (r.gps_lat||'').toString(), (r.gps_lon||'').toString(),
+        (r.proj_lat||'').toString(), (r.proj_lon||'').toString(),
+        `"${r.timestamp||''}"`
+      ].join(','));
+    });
+  });
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'distance_plot_data.csv'; a.click();
+  setStatus('CSV eksporteret!', true);
+}
+
+// ─── CSV IMPORT + SEABORN-STYLE COMPARE PLOT ─────────────────────────────────
+let compareModal = null;
+
+function importCompareCSV(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const imported = parseCSV(e.target.result);
+      if (!imported.length) { setStatus('Tom CSV fil.'); return; }
+      input.value = '';
+      showCompareModal(imported, file.name);
+    } catch(err) { setStatus('Import fejl: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+function showCompareModal(rows, fname) {
+  if (compareModal) { compareModal.remove(); }
+
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;display:flex;align-items:center;justify-content:center;`;
+
+  const modal = document.createElement('div');
+  modal.style.cssText = `background:#fff;border-radius:10px;padding:20px;width:min(92vw,820px);max-height:90vh;overflow:auto;font-family:'Courier New',monospace;box-shadow:0 8px 40px rgba(0,0,0,0.25);`;
+
+  const labels = [...new Set(rows.map(r => r.dataset_label))];
+  const metrics = [
+    { key: 'P_Signal',  smooth: 'P_Signal_smooth',  label: 'Signal',       unit: 'dBm', color: '#3a7bd5' },
+    { key: 'P_Channel', smooth: 'P_Channel_smooth', label: 'Interference',  unit: 'dBm', color: '#e05c5c' },
+    { key: 'SINR',      smooth: 'SINR_smooth',      label: 'SINR',          unit: 'dB',  color: '#3ec97e' },
+  ];
+
+  modal.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#0f172a;">Compare Plot</div>
+        <div style="font-size:9px;color:#64748b;margin-top:2px;">${fname} — ${rows.length} rækker, ${labels.length} datasæt</div>
+      </div>
+      <button onclick="document.getElementById('_cmp_overlay').remove()" style="background:none;border:1px solid #cbd5e1;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:10px;color:#64748b;">✕ Luk</button>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+      <span style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:1px;">Metric:</span>
+      ${metrics.map((m,i) => `<button id="_cmp_mb_${i}" onclick="renderCompare(${i})" style="padding:4px 9px;border-radius:4px;border:1px solid #cbd5e1;background:${i===0?'#eff6ff':'#fff'};color:${i===0?'#2563eb':'#64748b'};font-family:inherit;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">${m.label}</button>`).join('')}
+      <span style="font-size:9px;color:#64748b;margin-left:8px;text-transform:uppercase;letter-spacing:1px;">Data:</span>
+      <button id="_cmp_raw_btn" onclick="setCmpDataMode('raw')" style="padding:4px 9px;border-radius:4px;border:1px solid #2563eb;background:#eff6ff;color:#2563eb;font-family:inherit;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;">Raw</button>
+      <button id="_cmp_sm_btn" onclick="setCmpDataMode('smooth')" style="padding:4px 9px;border-radius:4px;border:1px solid #cbd5e1;background:#fff;color:#64748b;font-family:inherit;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;">Smoothed</button>
+    </div>
+    <div id="_cmp_plot" style="width:100%;height:380px;"></div>
+  `;
+
+  overlay.id = '_cmp_overlay';
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  compareModal = overlay;
+
+  window._cmpRows = rows;
+  window._cmpLabels = labels;
+  window._cmpMetrics = metrics;
+  window._cmpMetricIdx = 0;
+  window._cmpDataMode = 'raw';
+
+  renderCompare(0);
+}
+
+function setCmpDataMode(mode) {
+  window._cmpDataMode = mode;
+  document.getElementById('_cmp_raw_btn').style.cssText += mode==='raw'
+    ? 'border-color:#2563eb;background:#eff6ff;color:#2563eb;'
+    : 'border-color:#cbd5e1;background:#fff;color:#64748b;';
+  document.getElementById('_cmp_sm_btn').style.cssText += mode==='smooth'
+    ? 'border-color:#2563eb;background:#eff6ff;color:#2563eb;'
+    : 'border-color:#cbd5e1;background:#fff;color:#64748b;';
+  renderCompare(window._cmpMetricIdx);
+}
+
+function renderCompare(metricIdx) {
+  window._cmpMetricIdx = metricIdx;
+  const { _cmpRows: rows, _cmpLabels: labels, _cmpMetrics: metrics, _cmpDataMode: dmode } = window;
+  const m = metrics[metricIdx];
+  const valKey = dmode === 'smooth' ? m.smooth : m.key;
+
+  metrics.forEach((_, i) => {
+    const btn = document.getElementById(`_cmp_mb_${i}`);
+    if (!btn) return;
+    btn.style.background = i === metricIdx ? '#eff6ff' : '#fff';
+    btn.style.borderColor = i === metricIdx ? '#2563eb' : '#cbd5e1';
+    btn.style.color       = i === metricIdx ? '#2563eb' : '#64748b';
+  });
+
+  const PALETTE = ['#3a7bd5','#e05c5c','#3ec97e','#f59e0b','#8b5cf6'];
+  const traces = [];
+
+  labels.forEach((lbl, li) => {
+    const color = PALETTE[li % PALETTE.length];
+    const lblRows = rows.filter(r => r.dataset_label === lbl);
+
+    const distVals = lblRows.map(r => +r.dist_along_route);
+    const dmin = Math.min(...distVals), dmax = Math.max(...distVals);
+    const N_BINS = 80;
+    const binW = (dmax - dmin) / N_BINS || 1;
+    const bins = {};
+    lblRows.forEach(r => {
+      const bk = Math.round((+r.dist_along_route - dmin) / binW);
+      if (!bins[bk]) bins[bk] = [];
+      bins[bk].push(+r[valKey]);
+    });
+
+    const xs = [], means = [], sds = [], upper = [], lower = [];
+    Object.keys(bins).sort((a,b)=>+a-+b).forEach(bk => {
+      const vals = bins[bk].filter(v => !isNaN(v));
+      if (!vals.length) return;
+      const x = dmin + (+bk + 0.5) * binW;
+      const mean = vals.reduce((a,b)=>a+b,0) / vals.length;
+      const sd = vals.length > 1
+        ? Math.sqrt(vals.reduce((a,v)=>a+(v-mean)**2,0)/(vals.length-1))
+        : 0;
+      xs.push(x); means.push(mean); upper.push(mean+sd); lower.push(mean-sd);
+    });
+
+    traces.push({
+      x: [...xs, ...xs.slice().reverse()],
+      y: [...upper, ...lower.slice().reverse()],
+      fill: 'toself', line: { color: 'transparent' },
+      showlegend: false, hoverinfo: 'skip', type: 'scatter',
+      fillcolor: hexToRgba(color, 0.15),
+      name: lbl + ' ±SD',
+    });
+
+    traces.push({
+      x: xs, y: means, type: 'scatter', mode: 'lines',
+      name: lbl + (dmode==='smooth'?' (Smooth)':''),
+      line: { color: color, width: 2 },
+      hovertemplate: `<b>${lbl}</b><br>Dist: %{x:.1f} m<br>${m.label}: %{y:.2f} ${m.unit}<extra></extra>`,
+    });
+  });
+
+  Plotly.newPlot('_cmp_plot', traces, {
+    paper_bgcolor: '#ffffff', plot_bgcolor: '#f8fafc',
+    font: { family: 'Courier New, monospace', size: 10, color: '#334155' },
+    xaxis: { title: { text: 'Distance along route (m)' }, gridcolor: '#e2e8f0', zerolinecolor: '#e2e8f0' },
+    yaxis: { title: { text: `${m.label} [${m.unit}]` }, gridcolor: '#e2e8f0', zerolinecolor: '#e2e8f0' },
+    margin: { t: 20, b: 55, l: 56, r: 12 },
+    legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: 1.04, yanchor: 'bottom',
+              bgcolor: '#ffffff', bordercolor: '#cbd5e1', borderwidth: 1 },
+    hovermode: 'x unified',
+  }, { displayModeBar: false, responsive: true });
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+buildSidebar();
+</script>
+</body>
+</html>

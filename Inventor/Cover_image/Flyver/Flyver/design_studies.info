@@ -1,0 +1,7 @@
+<cfd_design_studies version="21.0.20201120" user_name="armin">
+ <design_study folder="C:/Users/armin/Documents/Inventor 3D filer/Flyver/Flyver" instance_id="eed701e4-d31a-4b89-937c-b224be3b7aa7" name="Flyver" study_id="5f3b6c01-0348-4a7e-8cad-27d40ce30c4f">
+  <design launcher_type="CP_INVENTOR" model_id="Flyver.cfdsmt" lock_status="true" name="Prototype 1">
+   <analysis name="10 ms"/>
+  </design>
+ </design_study>
+</cfd_design_studies>
