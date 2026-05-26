@@ -5,3 +5,6 @@
 	path = Meshing_firmware
 	url = git@github.com:ESD625-Fedtmules-muler/Radio_TDMA.git
 	branch = Router
+[submodule "Hardware/Transciever_hardware"]
+	path = Hardware/Transciever_hardware
+	url = git@github.com:ESD625-Fedtmules-muler/ESP_LR1121_Modem.git
